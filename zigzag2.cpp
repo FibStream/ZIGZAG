@@ -381,14 +381,110 @@ void split(int x) // split cluster x
         op += 2;
     }
 
-    else if (c[x].layer == (H - 1))
+    else if (c[x].layer == (H - 1)) // highest layer cluster split
     {
-        ;
+        // create new cluster
+        C++;
+        CLUSTERCOUNT++;
+        c[C].cid = C;
+        c[C].layer = c[x].layer;
+        c[C].cparent = c[x].cparent;
+        int i, y, d = INF, tmpy, tmpd;
+
+        // insert nodes into new cluster
+        int cnt = 0;
+        for (auto it = c[x].subordinate.cbegin(); it != c[x].subordinate.cend(); it++)
+        {
+            cnt++;
+            if (cnt > (c[x].csize / 2))
+                break;
+            i = *it;
+            c[C].subordinate.insert(i);
+            c[C].csize++;
+            op++;
+        }
+        // delete from original cluster
+        for (auto it = c[C].subordinate.cbegin(); it != c[C].subordinate.cend(); it++)
+        {
+            i = *it;
+            c[x].subordinate.erase(i);
+            c[x].csize--;
+            op++;
+        }
+        // select the min-degree node to be the head
+        for (auto it = c[C].subordinate.cbegin(); it != c[C].subordinate.cend(); it++)
+        {
+            tmpy = *it;
+            tmpd = a[tmpy].degree;
+            if (tmpd < d)
+            {
+                y = tmpy;
+                d = tmpd;
+            }
+        }
+        c[C].chead = y;
+        c[C].subordinate.erase(y);
+        for (auto it = c[C].subordinate.cbegin(); it != c[C].subordinate.cend(); it++)
+        {
+            i = *it;
+            a[i].nhead = c[C].chead;
+            a[i].clusterid = C;
+        }
+
+        // go to upper layer
     }
 
-    else
+    else // ordinary split
     {
-        ;
+        // create new cluster
+        C++;
+        CLUSTERCOUNT++;
+        c[C].cid = C;
+        c[C].layer = c[x].layer;
+        c[C].cparent = c[x].cparent;
+        int i, y, d = INF, tmpy, tmpd;
+
+        // insert nodes into new cluster
+        int cnt = 0;
+        for (auto it = c[x].subordinate.cbegin(); it != c[x].subordinate.cend(); it++)
+        {
+            cnt++;
+            if (cnt > (c[x].csize / 2))
+                break;
+            i = *it;
+            c[C].subordinate.insert(i);
+            c[C].csize++;
+            op++;
+        }
+        // delete from original cluster
+        for (auto it = c[C].subordinate.cbegin(); it != c[C].subordinate.cend(); it++)
+        {
+            i = *it;
+            c[x].subordinate.erase(i);
+            c[x].csize--;
+            op++;
+        }
+        // select the min-degree node to be the head
+        for (auto it = c[C].subordinate.cbegin(); it != c[C].subordinate.cend(); it++)
+        {
+            tmpy = *it;
+            tmpd = a[tmpy].degree;
+            if (tmpd < d)
+            {
+                y = tmpy;
+                d = tmpd;
+            }
+        }
+        c[C].chead = y;
+        c[C].subordinate.erase(y);
+        for (auto it = c[C].subordinate.cbegin(); it != c[C].subordinate.cend(); it++)
+        {
+            i = *it;
+            a[i].nhead = c[C].chead;
+            a[i].clusterid = C;
+        }
+
+        // go to upper layer
     }
 }
 void scan()
