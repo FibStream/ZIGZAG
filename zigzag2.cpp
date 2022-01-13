@@ -531,6 +531,82 @@ void maintain(int x)
             a[x].addable = true;
     }
 }
+void departure(int x) 
+{
+    /*
+     * parent of X needs to delete link
+     * select the min-degree node Z to forward data for children
+     * select layer-0 subordinate X' to replace X, including get content from parent of X
+    */
+    int parent = a[x].nparent;
+    a[x].deleted = true;
+    a[parent].children.erase(x);
+    a[parent].degree--;
+    if (a[x].layer == 0)
+    {
+        int curcid = a[x].clusterid;
+        c[curcid].subordinate.erase(x);
+        c[curcid].csize--;
+    }
+    else
+    {
+        /*
+         * find z
+         * special case: x is in the highest layer, may find 1
+        */
+        int i, mindeg = INF, z, xx;
+        int curcid = a[x].clusterid;
+        for (auto it = c[curcid].subordinate.cbegin(); it != c[curcid].subordinate.cend(); it++)
+        {
+            i = *it;
+            if (a[i].degree < INF)
+            {
+                z = i;
+                mindeg = a[i].degree;
+            }
+        }
+        // switch parent to z
+        for (auto it = a[x].children.cbegin(); it != a[x].children.cend(); it++)
+        {
+            i = *it;
+            a[i].nparent = z;
+            a[z].children.insert(i);
+            a[z].degree++;
+        }
+        // find layer-0 subordinate xx
+        for (int i = 1; i <= C; i++)
+        {
+            if ((!c[i].deleted) && (c[i].chead == x) && (c[i].layer == 0))
+            {
+                xx = *c[i].subordinate.cbegin();
+                break;
+            }
+        }
+        for (int i = 1; i <= C; i++)
+        {
+            if ((!c[i].deleted) && (c[i].chead == x))
+            {
+                c[i].chead = xx;
+                if (c[i].layer == 0)
+                {
+                    c[i].subordinate.erase(xx);
+                    c[i].csize--;
+                }
+            }
+        }
+        // copy data to replace x with xx
+        a[xx].clusterid = a[x].clusterid;
+        c[curcid].subordinate.erase(x);
+        c[curcid].subordinate.insert(x);
+        a[xx].layer = a[x].layer;
+        a[a[xx].nparent].children.erase(xx);
+        a[a[xx].nparent].degree--;
+        a[xx].nhead = a[x].nhead;
+        a[xx].nparent = a[x].nparent;
+        a[a[x].nparent].children.insert(xx);
+        a[a[x].nparent].degree++;
+    }
+}
 int main()
 {
     srand(time(0));
