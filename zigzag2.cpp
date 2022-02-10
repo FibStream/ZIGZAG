@@ -10,7 +10,7 @@
 #include <ctime>
 using namespace std;
 const int k = 5; // parameter for cluster size
-const int MAXN = 2000 + 5; // max node number
+const int MAXN = 5000 + 5; // max node number
 const int INF = 0x3f3f3f3f;
 struct node
 {
@@ -128,14 +128,14 @@ void printlog()
     printf("Avg Bandwidth = %d\n", avgbw / N);
     printf("Operation count = %d\n", op);
     printf("\n");
-
+/*
     for (int i = 1; i <= N; i++)
     {
         for (int j = 1; j <= N; j++)
         {
             printf("");
         }
-    }
+    }*/
 }
 void join(int x)
 {
@@ -240,15 +240,16 @@ void split(int x) // split cluster x
             i = *it;
             c[C].subordinate.insert(i);
             c[C].csize++;
-            op++;
+            //op++;
         }
+        op++;
         // delete from original cluster
         for (auto it = c[C].subordinate.cbegin(); it != c[C].subordinate.cend(); it++)
         {
             i = *it;
             c[x].subordinate.erase(i);
             c[x].csize--;
-            op++;
+            //op++;
         }
         // select the min-degree node to be the head
         for (auto it = c[C].subordinate.cbegin(); it != c[C].subordinate.cend(); it++)
@@ -288,6 +289,7 @@ void split(int x) // split cluster x
         a[y].layer = c[C].chead;
         a[y].clusterid = C;
 
+        // update cluster parent
         c[C].cparent = 0;
         c[x].cparent = C;
         c[C - 1].cparent = C;
@@ -328,15 +330,16 @@ void split(int x) // split cluster x
             i = *it;
             c[C].subordinate.insert(i);
             c[C].csize++;
-            op++;
+            //op++;
         }
+        op++;
         // delete from original cluster
         for (auto it = c[C].subordinate.cbegin(); it != c[C].subordinate.cend(); it++)
         {
             i = *it;
             c[x].subordinate.erase(i);
             c[x].csize--;
-            op++;
+            //op++;
         }
         // select the min-degree node to be the head
         for (auto it = c[C].subordinate.cbegin(); it != c[C].subordinate.cend(); it++)
@@ -401,15 +404,16 @@ void split(int x) // split cluster x
             i = *it;
             c[C].subordinate.insert(i);
             c[C].csize++;
-            op++;
+            //op++;
         }
+        op++;
         // delete from original cluster
         for (auto it = c[C].subordinate.cbegin(); it != c[C].subordinate.cend(); it++)
         {
             i = *it;
             c[x].subordinate.erase(i);
             c[x].csize--;
-            op++;
+            //op++;
         }
         // select the min-degree node to be the head
         for (auto it = c[C].subordinate.cbegin(); it != c[C].subordinate.cend(); it++)
@@ -431,7 +435,66 @@ void split(int x) // split cluster x
             a[i].clusterid = C;
         }
 
+        // delete link
+        for (auto it = c[x].subordinate.cbegin(); it != c[x].subordinate.cend(); it++)
+        {
+            i = *it;
+            for (auto jt = a[i].children.cbegin(); jt != a[i].children.cend(); jt++)
+            {
+                int j = *jt;
+                int jhead = a[j].nhead;
+                if (c[C].subordinate.count(jhead))
+                {
+                    a[i].children.erase(j);
+                    a[i].degree--;
+                    int r = *c[C].subordinate.cbegin();
+                    a[j].nparent = r;
+                    a[r].degree++;
+                    a[r].children.insert(j);
+                }
+            }
+        }
+
+        for (auto it = c[C].subordinate.cbegin(); it != c[C].subordinate.cend(); it++)
+        {
+            i = *it;
+            for (auto jt = a[i].children.cbegin(); jt != a[i].children.cend(); jt++)
+            {
+                int j = *jt;
+                int jhead = a[j].nhead;
+                if (c[x].subordinate.count(jhead))
+                {
+                    a[i].children.erase(j);
+                    a[i].degree--;
+                    int r = *c[x].subordinate.cbegin();
+                    a[j].nparent = r;
+                    a[r].degree++;
+                    a[r].children.insert(j);
+                }
+            }
+        }
         // go to upper layer
+        H++;
+        C++;
+        CLUSTERCOUNT++;
+        c[C].cid = C;
+        c[C].layer = H - 1;
+        c[C].chead = c[x].chead; // always 1
+        c[C].csize++;
+        a[c[C].chead].layer = c[C].layer;
+        a[c[C].chead].clusterid = C;
+
+        c[C].subordinate.insert(c[C - 1].chead);
+        c[C].csize++;
+        a[y].nparent = c[C].chead;
+        a[y].nhead = c[C].chead;
+        a[y].layer = c[C].chead;
+        a[y].clusterid = C;
+
+        // update cluster parent
+        c[C].cparent = 0;
+        c[x].cparent = C;
+        c[C - 1].cparent = C;
     }
 
     else // ordinary split
@@ -454,15 +517,16 @@ void split(int x) // split cluster x
             i = *it;
             c[C].subordinate.insert(i);
             c[C].csize++;
-            op++;
+            //op++;
         }
+        op++;
         // delete from original cluster
         for (auto it = c[C].subordinate.cbegin(); it != c[C].subordinate.cend(); it++)
         {
             i = *it;
             c[x].subordinate.erase(i);
             c[x].csize--;
-            op++;
+            //op++;
         }
         // select the min-degree node to be the head
         for (auto it = c[C].subordinate.cbegin(); it != c[C].subordinate.cend(); it++)
@@ -484,6 +548,45 @@ void split(int x) // split cluster x
             a[i].clusterid = C;
         }
 
+        // delete link
+        for (auto it = c[x].subordinate.cbegin(); it != c[x].subordinate.cend(); it++)
+        {
+            i = *it;
+            for (auto jt = a[i].children.cbegin(); jt != a[i].children.cend(); jt++)
+            {
+                int j = *jt;
+                int jhead = a[j].nhead;
+                if (c[C].subordinate.count(jhead))
+                {
+                    a[i].children.erase(j);
+                    a[i].degree--;
+                    int r = *c[C].subordinate.cbegin();
+                    a[j].nparent = r;
+                    a[r].degree++;
+                    a[r].children.insert(j);
+                }
+            }
+        }
+
+        for (auto it = c[C].subordinate.cbegin(); it != c[C].subordinate.cend(); it++)
+        {
+            i = *it;
+            for (auto jt = a[i].children.cbegin(); jt != a[i].children.cend(); jt++)
+            {
+                int j = *jt;
+                int jhead = a[j].nhead;
+                if (c[x].subordinate.count(jhead))
+                {
+                    a[i].children.erase(j);
+                    a[i].degree--;
+                    int r = *c[x].subordinate.cbegin();
+                    a[j].nparent = r;
+                    a[r].degree++;
+                    a[r].children.insert(j);
+                }
+            }
+        }
+
         // go to upper layer
     }
 }
@@ -491,7 +594,7 @@ void scan()
 {
     for (int i = 1; i <= CLUSTERCOUNT; i++)
     {
-        if (!c[i].deleted && (c[i].csize > (k * 3)))
+        if (!c[i].deleted && (c[i].csize > (k * 4)))
         {
             split(i);
         }
@@ -531,7 +634,7 @@ void maintain(int x)
             a[x].addable = true;
     }
 }
-void departure(int x) 
+void departure(int x)
 {
     /*
      * parent of X needs to delete link
@@ -607,19 +710,49 @@ void departure(int x)
         a[a[x].nparent].degree++;
     }
 }
+void merge(int u, int v) // merge cluster u and v
+{
+    int i, y, d = INF, tmpy, tmpd;
+    int newparent;
+
+    // find min-degree element to become newparent
+    for (auto it = c[c[u].cparent].subordinate.cbegin(); it != c[c[u].cparent].subordinate.cend(); it++)
+    {
+        tmpy = *it;
+        tmpd = a[tmpy].degree;
+        if (tmpd < d)
+        {
+            y = tmpy;
+            d = tmpd;
+        }
+    }
+    newparent = y;
+
+    c[v].deleted = true;
+    for (auto it = c[v].subordinate.cbegin(); it != c[v].subordinate.cend(); it++)
+    {
+        i = *it;
+        ;
+    }
+}
 int main()
 {
     srand(time(0));
     init();
-    for (int i = 2; i <= 20; i++)
+
+    for (int i = 2; i <= 5000; i++)
     {
         join(1);
         scan();
         reset();
         maintain(1);
-        //if (i % 10 == 0)
-          //  printlog();
+        if (i % 1000 == 0)
+            printlog();
     }
-    printlog();
+    //printlog();
     return 0;
 }
+/*
+1000 2000 3000 4000 5000
+2206 4413 6652 8891 11114
+*/

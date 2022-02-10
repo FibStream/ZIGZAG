@@ -10,7 +10,7 @@ Unofficially implement ***ZIGZAG: An Efficient Peer-to-Peer Scheme for Media Str
   
 ## To Do
 
-- Finish `split` function when splitting clusters in the highest layer and middle layers.
-- Add `client departure` and `merge cluster` function.
+- Fix `merge cluster` function.
+- Fix delay and bandwidth
 
-A long way to go, isn't it?
+The operation count is ok.
