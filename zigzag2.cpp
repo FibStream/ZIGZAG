@@ -127,6 +127,7 @@ void printlog()
     printf("Avg Delay = %d\n", avgdelay / N);
     printf("Avg Bandwidth = %d\n", avgbw / N);
     printf("Operation count = %d\n", op);
+    printf("H = %d\n", H);
     printf("\n");
 /*
     for (int i = 1; i <= N; i++)
@@ -746,7 +747,7 @@ int main()
         scan();
         reset();
         maintain(1);
-        if (i % 1000 == 0)
+        if (i % 500 == 0)
             printlog();
     }
     //printlog();
