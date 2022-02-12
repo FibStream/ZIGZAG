@@ -651,6 +651,8 @@ void maintain(int x)
         a[x].reachable = true;
         if (c[a[x].clusterid].csize >= k && c[a[x].clusterid].csize < (k * 3))
             a[x].addable = true;
+        a[x].bw = min(a[a[x].nparent].bw, a[x].bandwidth);
+        a[x].delay = a[a[x].nparent].delay + G[x][a[x].nparent];
     }
 }
 void departure(int x)
