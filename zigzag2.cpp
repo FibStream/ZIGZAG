@@ -589,6 +589,24 @@ void split(int x) // split cluster x
         }
 
         // go to upper layer
+        a[y].layer++;
+        a[y].nhead = a[c[x].chead].nhead;
+        a[y].nparent = a[c[x].chead].nparent;
+        a[a[c[x].chead].nparent].degree++;
+        a[a[c[x].chead].nparent].children.insert(y);
+        a[y].clusterid = a[c[x].chead].clusterid;
+        c[a[y].clusterid].csize++;
+        c[a[y].clusterid].subordinate.insert(y);
+        a[y].degree = 0;
+        a[y].addable = false;
+        int tmp = *c[C].subordinate.cbegin();
+        for (auto it = a[y].children.cbegin(); it != a[y].children.cend(); it++)
+        {
+            i = *it;
+            a[i].nparent = tmp;
+            a[tmp].degree++;
+            a[tmp].children.insert(i);
+        }
     }
 }
 void scan()
