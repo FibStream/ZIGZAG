@@ -35,7 +35,7 @@ struct node
     {
         nid = 0;
         delay = 0; // temporarily use random number
-        bandwidth = rand() % 1000 + 1; // temporarily use random number
+        bandwidth = rand() + 1; // temporarily use random number
         reachable = false;
         addable = false;
         nparent = 0;
@@ -65,7 +65,7 @@ void init()
     {
         for (int j = 1; j < i; j++)
         {
-            G[i][j] = rand() % 1000 + 1;
+            G[i][j] = rand() + 1;
             G[j][i] = G[i][j];
         }
     }
