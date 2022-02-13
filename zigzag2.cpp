@@ -35,7 +35,7 @@ struct node
     {
         nid = 0;
         delay = 0; // temporarily use random number
-        bandwidth = rand() + 1; // temporarily use random number
+        bandwidth = rand() % 1000 + 1; // temporarily use random number
         reachable = false;
         addable = false;
         nparent = 0;
@@ -65,7 +65,7 @@ void init()
     {
         for (int j = 1; j < i; j++)
         {
-            G[i][j] = rand() + 1;
+            G[i][j] = rand() % 1000 + 1;
             G[j][i] = G[i][j];
         }
     }
@@ -99,6 +99,20 @@ void init()
 
     op += 3;
 }
+int calcdelay(int x)
+{
+    if (x == 1)
+        return 0;
+    else
+        return G[x][a[x].nparent] + calcdelay(a[x].nparent);
+}
+int calcbw(int x)
+{
+    if (x == 1)
+        return 1000;
+    else
+        return min(a[x].bandwidth, a[a[x].nparent].bandwidth);
+}
 void printlog()
 {/*
     for (int i = 1; i <= N; i++)
@@ -120,8 +134,13 @@ void printlog()
     int avgdelay = 0, avgbw = 0;
     for (int i = 1; i <= N; i++)
     {
-        avgdelay += a[i].delay;
-        avgbw += a[i].bw;
+        avgdelay += calcdelay(i);
+        avgbw += calcbw(i);
+        //printf("%d %d %d\n", i, avgdelay, avgbw);
+    }
+    for (int i = 1; i <= N; i++)
+    {
+        printf("%d %d\n", i, a[i].nparent);
     }
     printf("N = %d\n", N);
     printf("Avg Delay = %d\n", avgdelay / N);
@@ -629,6 +648,8 @@ void reset()
 }
 void maintain(int x)
 {
+    a[x].bw = min(a[a[x].nparent].bw, a[x].bandwidth);
+    a[x].delay = a[a[x].nparent].delay + G[x][a[x].nparent];
     if (a[x].layer || (x == 1))
     {
         int i;
@@ -651,8 +672,6 @@ void maintain(int x)
         a[x].reachable = true;
         if (c[a[x].clusterid].csize >= k && c[a[x].clusterid].csize < (k * 3))
             a[x].addable = true;
-        a[x].bw = min(a[a[x].nparent].bw, a[x].bandwidth);
-        a[x].delay = a[a[x].nparent].delay + G[x][a[x].nparent];
     }
 }
 void departure(int x)
@@ -761,13 +780,13 @@ int main()
     srand(time(0));
     init();
 
-    for (int i = 2; i <= 5000; i++)
+    for (int i = 2; i <= 500; i++)
     {
         join(1);
         scan();
         reset();
         maintain(1);
-        if (i % 500 == 0)
+        if (i % 50 == 0)
             printlog();
     }
     //printlog();
