@@ -687,6 +687,7 @@ void departure(int x)
     a[parent].degree--;
     if (a[x].layer == 0)
     {
+        op++;
         int curcid = a[x].clusterid;
         c[curcid].subordinate.erase(x);
         c[curcid].csize--;
@@ -708,9 +709,11 @@ void departure(int x)
                 mindeg = a[i].degree;
             }
         }
+        op++;
         // switch parent to z
         for (auto it = a[x].children.cbegin(); it != a[x].children.cend(); it++)
         {
+            op++;
             i = *it;
             a[i].nparent = z;
             a[z].children.insert(i);
@@ -725,6 +728,7 @@ void departure(int x)
                 break;
             }
         }
+        op++;
         for (int i = 1; i <= C; i++)
         {
             if ((!c[i].deleted) && (c[i].chead == x))
@@ -737,6 +741,7 @@ void departure(int x)
                 }
             }
         }
+        op++;
         // copy data to replace x with xx
         a[xx].clusterid = a[x].clusterid;
         c[curcid].subordinate.erase(x);
@@ -748,6 +753,7 @@ void departure(int x)
         a[xx].nparent = a[x].nparent;
         a[a[x].nparent].children.insert(xx);
         a[a[x].nparent].degree++;
+        op++;
     }
 }
 void merge(int u, int v) // merge cluster u and v
@@ -789,10 +795,17 @@ int main()
         if (i % 1000 == 0)
             printlog();
     }
+    op = 0;
+    for (int i = 1; i <= 1000; i++)
+    {
+        int tmp = rand() % 9999 + 2;
+        departure(tmp);
+        if (i % 100 == 0)
+            printlog();
+    }
     //printlog();
     return 0;
 }
 /*
-1000 2000 3000 4000 5000
-2206 4413 6652 8891 11114
+2218 4472 6721 8985 11265 13500 15798 18056 20323 22593
 */
