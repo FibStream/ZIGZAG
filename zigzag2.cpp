@@ -10,7 +10,7 @@
 #include <ctime>
 using namespace std;
 const int k = 5; // parameter for cluster size
-const int MAXN = 5000 + 5; // max node number
+const int MAXN = 10000 + 5; // max node number
 const int INF = 0x3f3f3f3f;
 struct node
 {
@@ -130,7 +130,7 @@ void printlog()
         }
         printf("\n\n");
     }*/
-
+/*
     int avgdelay = 0, avgbw = 0;
     for (int i = 1; i <= N; i++)
     {
@@ -141,10 +141,10 @@ void printlog()
     for (int i = 1; i <= N; i++)
     {
         printf("%d %d\n", i, a[i].nparent);
-    }
+    }*/
     printf("N = %d\n", N);
-    printf("Avg Delay = %d\n", avgdelay / N);
-    printf("Avg Bandwidth = %d\n", avgbw / N);
+    //printf("Avg Delay = %d\n", avgdelay / N);
+    //printf("Avg Bandwidth = %d\n", avgbw / N);
     printf("Operation count = %d\n", op);
     printf("H = %d\n", H);
     printf("\n");
@@ -780,13 +780,13 @@ int main()
     srand(time(0));
     init();
 
-    for (int i = 2; i <= 500; i++)
+    for (int i = 2; i <= 10000; i++)
     {
         join(1);
         scan();
         reset();
         maintain(1);
-        if (i % 50 == 0)
+        if (i % 1000 == 0)
             printlog();
     }
     //printlog();
