@@ -454,6 +454,7 @@ void split(int x) // split cluster x
             a[i].nhead = c[C].chead;
             a[i].clusterid = C;
         }
+        op++;
 
         // delete link
         for (auto it = c[x].subordinate.cbegin(); it != c[x].subordinate.cend(); it++)
@@ -473,6 +474,7 @@ void split(int x) // split cluster x
                     a[r].children.insert(j);
                 }
             }
+            op++;
         }
 
         for (auto it = c[C].subordinate.cbegin(); it != c[C].subordinate.cend(); it++)
@@ -492,6 +494,7 @@ void split(int x) // split cluster x
                     a[r].children.insert(j);
                 }
             }
+            op++;
         }
         // go to upper layer
         H++;
@@ -515,6 +518,7 @@ void split(int x) // split cluster x
         c[C].cparent = 0;
         c[x].cparent = C;
         c[C - 1].cparent = C;
+        op++;
     }
 
     else // ordinary split
@@ -567,6 +571,7 @@ void split(int x) // split cluster x
             a[i].nhead = c[C].chead;
             a[i].clusterid = C;
         }
+        op++;
 
         // delete link
         for (auto it = c[x].subordinate.cbegin(); it != c[x].subordinate.cend(); it++)
@@ -586,6 +591,7 @@ void split(int x) // split cluster x
                     a[r].children.insert(j);
                 }
             }
+            op++;
         }
 
         for (auto it = c[C].subordinate.cbegin(); it != c[C].subordinate.cend(); it++)
@@ -605,6 +611,7 @@ void split(int x) // split cluster x
                     a[r].children.insert(j);
                 }
             }
+            op++;
         }
 
         // go to upper layer
@@ -626,6 +633,7 @@ void split(int x) // split cluster x
             a[tmp].degree++;
             a[tmp].children.insert(i);
         }
+        op++;
     }
 }
 void scan()
